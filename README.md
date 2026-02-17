@@ -22,9 +22,4 @@ MoneyMitra is built using modern technologies to ensure a seamless and secure us
 - **View Insights**: Explore AI-generated recommendations and risk analysis.
 - **Learn**: Access e-books and guides to enhance financial knowledge.
 
-## Team Coding Gurus🛠️
-- **Team Lead**: Darshan Kapekar
-- **Members**: Aadil Shah
-- **Members**: Pranav Pol
-- **Members**: Shravani Rasam
 

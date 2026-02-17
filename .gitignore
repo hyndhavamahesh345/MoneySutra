@@ -1,0 +1,37 @@
+# Ignore backend dependencies
+backend/venv/
+backend/env/
+backend/__pycache__/
+backend/*.py[cod]
+backend/*.sqlite3
+backend/*.db
+backend/*.log
+
+# Ignore Firebase & Cloudinary sensitive files
+backend/config/config.json
+
+# Ignore Redis
+backend/dump.rdb
+backend/appendonly.aof
+
+# Ignore Git & OS-specific files
+.DS_Store
+Thumbs.db
+*.swp
+backend/config/config.json
+
+# Secrets
+firebase_service_account.json
+*.env
+.env
+
+# Generated data
+backend/generated_csv/
+
+# Editor config
+.vscode/
+
+# Node / Python junk
+node_modules/
+__pycache__/
+*.pyc

@@ -1,0 +1,24 @@
+# 🚀 Python-related ignores
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.db
+*.log
+*.pyc
+venv/
+env/
+instance/
+
+# 🔥 Firebase & Cloudinary sensitive files
+config/config.json
+
+# 🏗 Flask & Pip dependencies
+.env
+*.env
+*.DS_Store
+*.lock
+
+# 🚀 Redis
+dump.rdb
+appendonly.aof
+.vercel

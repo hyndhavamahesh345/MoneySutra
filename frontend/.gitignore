@@ -1,0 +1,50 @@
+# 🚀 Python-related ignores
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.db
+venv/
+env/
+instance/
+*.log
+*.pyc
+
+# 🔥 Firebase & Cloudinary sensitive files
+config/config.json
+
+# 🏗 Flask & Pip dependencies
+*.env
+.env
+*.DS_Store
+*.lock
+
+# 🚀 Redis
+dump.rdb
+appendonly.aof
+
+# ⚡ Vite & Node.js dependencies
+node_modules/
+dist/
+.vite/
+.vscode/
+
+# 📦 Logs & Cache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# 🔥 Firebase & Cloudinary generated files
+firebase-debug.log
+.firebase/
+.firebaserc
+storage.rules
+firebase.json
+.cloudinary/
+
+# 🚀 Git & OS-specific
+.DS_Store
+Thumbs.db
+*.swp

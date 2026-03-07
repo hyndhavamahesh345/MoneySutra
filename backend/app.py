@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from config.firebase import db  # Import Firestore client
-from datetime import datetime
+import datetime
 from flask_cors import CORS
 from google.cloud import firestore  # Added this import
 import os
@@ -30,6 +30,7 @@ def require_auth(f):
         user_id = auth_header.split('Bearer ')[1]
         if not user_id:
             return jsonify({"error": "User ID not found in token"}), 401
+    
         
         # You can add additional verification here if needed
         
@@ -40,7 +41,7 @@ def require_auth(f):
 
 @app.route('/')
 def home():
-    return "Hello, this is moneymitra api!"
+    return "Hello, this is MoneySutra API!"
 
 app.register_blueprint(auth_routes, url_prefix='/auth')
 app.register_blueprint(investment_bp)
@@ -65,7 +66,7 @@ app.register_blueprint(advisor_bp)
 #         for budget in budgets_snapshot:
 #             budget_data = budget.to_dict()
 #             month_year = budget_data.get('month_year')
-#             month = datetime.strptime(month_year, "%Y-%m").strftime("%b")
+#             month = datetime.datetime.strptime(month_year, "%Y-%m").strftime("%b")
 #             income = budget_data.get('income', 0)
 #             expenses = (
 #                 budget_data.get('stocks', 0) +
@@ -112,7 +113,7 @@ def get_monthly_data():
         for budget in budgets_snapshot:
             budget_data = budget.to_dict()
             month_year = budget_data.get('month_year')
-            month = datetime.strptime(month_year, "%Y-%m").strftime("%b")
+            month = datetime.datetime.strptime(month_year, "%Y-%m").strftime("%b")
             income = budget_data.get('income', 0)
 
             if month_year in monthly_data:
@@ -127,7 +128,7 @@ def get_monthly_data():
         # Process expenses data (only for actual expenses)
         for expense in expenses_snapshot:
             expense_data = expense.to_dict()
-            expense_date = datetime.fromisoformat(expense_data.get('timestamp'))
+            expense_date = datetime.datetime.fromisoformat(expense_data.get('timestamp'))
             month_year = expense_date.strftime("%Y-%m")
 
             if month_year not in monthly_data:
@@ -165,7 +166,7 @@ def get_budget_progress():
         }
         valid_categories = list(category_mapping.values()) + ["Other"]
 
-        current_date = datetime.now()
+        current_date = datetime.datetime.now()
         current_month_year = current_date.strftime("%Y-%m")
         current_month = current_date.month
         current_year = current_date.year
@@ -197,12 +198,12 @@ def get_budget_progress():
                     
                     if 'date' in expense_dict:
                         try:
-                            expense_date = datetime.strptime(expense_dict['date'], "%Y-%m-%d")
+                            expense_date = datetime.datetime.strptime(expense_dict['date'], "%Y-%m-%d")
                         except ValueError:
                             pass
                     elif 'timestamp' in expense_dict:
                         try:
-                            expense_date = datetime.fromisoformat(expense_dict['timestamp'].replace('Z', '+00:00'))
+                            expense_date = datetime.datetime.fromisoformat(expense_dict['timestamp'].replace('Z', '+00:00'))
                         except ValueError:
                             pass
                     
@@ -272,7 +273,7 @@ def get_recent_transactions():
                 timestamp = expense_data.get('timestamp')
                 if timestamp:
                     try:
-                        transaction['date'] = datetime.fromisoformat(timestamp.replace('Z', '+00:00')).strftime("%b %d, %Y")
+                        transaction['date'] = datetime.datetime.fromisoformat(timestamp.replace('Z', '+00:00')).strftime("%b %d, %Y")
                     except ValueError:
                         pass  
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, Clock } from "lucide-react";
 
 const RecentTransactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -13,7 +13,9 @@ const RecentTransactions = () => {
         const userId = sessionStorage.getItem("uid");
 
         if (!userId) {
-          throw new Error("User ID not found in sessionStorage");
+          setTransactions([]);
+          setLoading(false);
+          return;
         }
 
         const response = await fetch(`/api/transactions?uid=${userId}`);
@@ -104,8 +106,7 @@ const RecentTransactions = () => {
     fetchLivePrices();
   }, [transactions, livePricesLoaded]);
 
-  if (loading) return <div>Loading transactions...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="p-8 text-center text-muted-foreground animate-pulse">Synchronizing transactions...</div>;
 
   const mappedTransactions = transactions.map((transaction) => ({
     id: transaction?.stock_symbol + transaction?.timestamp || "unknown",
@@ -115,71 +116,73 @@ const RecentTransactions = () => {
     shares: (transaction?.quantity || 0).toFixed(2),
     date:
       transaction?.timestamp &&
-      !isNaN(new Date(transaction.timestamp).getTime())
+        !isNaN(new Date(transaction.timestamp).getTime())
         ? new Date(transaction.timestamp).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
         : "Invalid Date",
     status: "completed",
     change: `${transaction?.changePercent || "0.00"}%`,
     isPositive: parseFloat(transaction?.changePercent || "0") >= 0,
   }));
 
+  if (mappedTransactions.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10 text-center opacity-60">
+        <Clock className="w-12 h-12 mb-4 text-gray-500" />
+        <p className="text-gray-400">No recent transactions found.</p>
+        <span className="text-xs">Your investment history will appear here.</span>
+      </div>
+    );
+  }
+
   return (
-    <table className="w-full border-collapse border border-gray-300 text-left">
-      <thead>
-        <tr className="bg-gray-100">
-          <th className="p-3 border border-gray-300">Asset</th>
-          <th className="p-3 border border-gray-300">Total Investment</th>
-          <th className="p-3 border border-gray-300">Date</th>
-          <th className="p-3 border border-gray-300 text-right">Change</th>
-        </tr>
-      </thead>
-      <tbody>
-        {mappedTransactions.map((transaction) => (
-          <tr key={transaction.id} className="border border-gray-300">
-            <td className="p-3 border border-gray-300 font-medium">
-              <div className="flex flex-col">
-                {transaction.asset}
-                <span
-                  className={`inline-flex items-center mt-1 px-2 py-1 text-xs font-medium rounded-full ${
-                    transaction.type === "buy"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {transaction.type === "buy" ? (
-                    <ArrowDown className="mr-1 h-3 w-3" />
-                  ) : (
-                    <ArrowUp className="mr-1 h-3 w-3" />
-                  )}
-                  {transaction.type}
-                </span>
-              </div>
-            </td>
-            <td className="p-3 border border-gray-300">
-              <div className="flex flex-col">
-                {transaction.amount}
-                <span className="text-xs text-gray-500">
-                  {transaction.shares}{" "}
-                  {transaction.shares === "1.00" ? "share" : "shares"}
-                </span>
-              </div>
-            </td>
-            <td className="p-3 border border-gray-300">{transaction.date}</td>
-            <td
-              className={`p-3 border border-gray-300 text-right font-medium ${
-                transaction.isPositive ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {transaction.change}
-            </td>
+    <div className="overflow-x-auto">
+      <table className="w-full text-left border-separate border-spacing-y-2">
+        <thead>
+          <tr>
+            <th className="pb-4 pt-1 px-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Asset</th>
+            <th className="pb-4 pt-1 px-2 text-xs font-bold uppercase tracking-widest text-muted-foreground text-right">Investment</th>
+            <th className="pb-4 pt-1 px-2 text-xs font-bold uppercase tracking-widest text-muted-foreground text-right">Change</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody className="space-y-4">
+          {mappedTransactions.map((transaction) => (
+            <tr key={transaction.id} className="group hover:bg-white/5 transition-colors">
+              <td className="p-2 first:rounded-l-xl">
+                <div className="flex flex-col">
+                  <span className="font-bold text-white tracking-tight">{transaction.asset}</span>
+                  <span
+                    className={`inline-flex items-center mt-1 text-[10px] font-black uppercase tracking-widest ${transaction.type === "buy"
+                      ? "text-green-500"
+                      : "text-red-500"
+                      }`}
+                  >
+                    {transaction.type}
+                  </span>
+                </div>
+              </td>
+              <td className="p-2 text-right">
+                <div className="flex flex-col">
+                  <span className="font-bold">{transaction.amount}</span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {transaction.shares} Qty
+                  </span>
+                </div>
+              </td>
+              <td
+                className={`p-2 text-right font-black last:rounded-r-xl ${transaction.isPositive ? "text-green-500" : "text-red-500"
+                  }`}
+              >
+                {transaction.change}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

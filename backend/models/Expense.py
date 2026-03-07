@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 class ExpenseModel:
     def __init__(self, data):
@@ -6,8 +6,8 @@ class ExpenseModel:
         self.description = data.get('description', '')
         self.amount = data.get('amount', 0)
         self.category = data.get('category', 'Other')
-        self.date = data.get('date', datetime.utcnow().isoformat())
-        self.timestamp = data.get('timestamp', datetime.utcnow().isoformat())
+        self.date = data.get('date', datetime.datetime.utcnow().isoformat())
+        self.timestamp = data.get('timestamp', datetime.datetime.utcnow().isoformat())
 
     def to_dict(self):
         return {

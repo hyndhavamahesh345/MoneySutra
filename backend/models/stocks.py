@@ -7,7 +7,7 @@ import base64  # Import base64 for encoding
 CSV_FOLDER = "generated_csv"
 os.makedirs(CSV_FOLDER, exist_ok=True)  # Ensure the folder exists
 
-from datetime import datetime
+import datetime
 class StockData:
     def format_ticker( ticker):
         """Ensure ticker is uppercase and ends with .NS if missing."""
@@ -25,8 +25,8 @@ class StockData:
             file_path = f"{CSV_FOLDER}/{self.ticker_symbol}_historical.csv"
             if os.path.exists(file_path):
                 # Check if the file is up to date
-                file_date = datetime.fromtimestamp(os.path.getmtime(file_path)).date()
-                if file_date == datetime.today().date():
+                file_date = datetime.datetime.fromtimestamp(os.path.getmtime(file_path)).date()
+                if file_date == datetime.date.today():
                     with open(file_path, 'rb') as file:
                         file_content = file.read()
                         # Encode the binary content to Base64
@@ -51,26 +51,6 @@ class StockData:
                     "file_path": file_path,
                     "file_content": file_content_base64  # Return Base64-encoded content
                 }
-        except Exception as e:
-            return {"error": str(e)}
-        """Fetch and return historical stock data."""
-        try:
-            
-            file_path = f"{CSV_FOLDER}/{self.ticker_symbol}_historical.csv"
-            if os.path.exists(file_path):
-                # Check if the file is up to date
-                file_date = datetime.fromtimestamp(os.path.getmtime(file_path)).date()
-                if file_date == datetime.today().date():
-                    with open(file_path, 'rb') as file:
-                        return {"message": "Data is up to date", "file_path": file_path, "file_content": file.read()}
-
-            # Fetch new data
-            data = self.ticker.history(period="max")
-            data.reset_index(inplace=True)
-            data.to_csv(file_path, index=False)
-
-            with open(file_path, 'rb') as file:
-                return {"message": "CSV file generated successfully", "file_path": file_path, "file_content": file.read()}
         except Exception as e:
             return {"error": str(e)}
 
@@ -159,14 +139,38 @@ class StockData:
             # Fetch stock prices using yfinance
             stock_prices = {}
             for symbol in stock_symbols:
-                symbol= StockData.format_ticker(symbol)
+                formatted_symbol = StockData.format_ticker(symbol)
                 try:
-                    stock = yf.Ticker(symbol)
-                    latest_price = stock.history(period="1d")["Close"].iloc[-1]
-                    stock_prices[symbol] = latest_price
+                    stock = yf.Ticker(formatted_symbol)
+                    
+                    # Try getting price from fast_info first (most efficient)
+                    latest_price = None
+                    try:
+                        latest_price = stock.fast_info.last_price
+                    except:
+                        pass
+                        
+                    if latest_price is None or latest_price == 0:
+                        # Fallback to history
+                        hist = stock.history(period="1d")
+                        if not hist.empty:
+                            latest_price = hist["Close"].iloc[-1]
+                    
+                    if latest_price is None or latest_price == 0:
+                        # Final fallback to info
+                        try:
+                            latest_price = stock.info.get('regularMarketPrice') or stock.info.get('currentPrice')
+                        except:
+                            pass
+
+                    if latest_price:
+                        stock_prices[symbol] = round(float(latest_price), 2)
+                    else:
+                        print(f"Could not find price for {formatted_symbol}")
+                        stock_prices[symbol] = 0.0
                 except Exception as e:
                     print(f"Error fetching price for {symbol}: {e}")
-                    stock_prices[symbol] = None  # Use None for invalid symbols
+                    stock_prices[symbol] = 0.0
 
             return {"stock_prices": stock_prices}, 200
         except Exception as e:

@@ -2,7 +2,7 @@
 from flask import request, jsonify
 from config.firebase import db
 from models.budget import BudgetModel
-from datetime import datetime 
+import datetime
 
 class BudgetController:
     def create_budget(self, user_id):
@@ -13,8 +13,8 @@ class BudgetController:
             budget_data['userId'] = user_id
             
             # Add timestamp and month_year to the budget data
-            budget_data['timestamp'] = datetime.utcnow().isoformat()
-            budget_data['month_year'] = datetime.utcnow().strftime("%Y-%m")
+            budget_data['timestamp'] = datetime.datetime.utcnow().isoformat()
+            budget_data['month_year'] = datetime.datetime.utcnow().strftime("%Y-%m")
             
             budget_model = BudgetModel(budget_data)
             budget_dict = budget_model.to_dict()
@@ -68,8 +68,8 @@ class BudgetController:
             budget_data['userId'] = user_id
             
             # Add timestamp and month_year
-            budget_data['timestamp'] = datetime.utcnow().isoformat()
-            budget_data['month_year'] = datetime.utcnow().strftime("%Y-%m")
+            budget_data['timestamp'] = datetime.datetime.utcnow().isoformat()
+            budget_data['month_year'] = datetime.datetime.utcnow().strftime("%Y-%m")
             
             budget_model = BudgetModel(budget_data)
             budget_dict = budget_model.to_dict()

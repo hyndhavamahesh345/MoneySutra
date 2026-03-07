@@ -17,14 +17,14 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-800 text-white p-4 w-full shadow-lg">
+    <nav className="sticky top-0 z-50 bg-black/60 backdrop-blur-xl text-white p-4 w-full border-b border-white/5 shadow-2xl">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <div className="flex items-center gap-3 text-2xl font-bold transition-all duration-300 hover:text-gray-400">
           <Link to="/" className="flex items-center gap-3">
-            <img src="/logo.svg" alt="Moneyसूत्र Logo" className="h-10 w-10" />
-            <span className="text-xl font-extrabold text-blue-400">
-              Moneyसूत्र
+            <img src="/logo.png" alt="Moneyसूत्र Logo" className="h-10 w-10" />
+            <span className="text-xl font-black tracking-tighter italic">
+              MoneySutra
             </span>
           </Link>
         </div>
@@ -141,9 +141,8 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`${
-          isMobileMenuOpen ? "block" : "hidden"
-        } lg:hidden bg-gray-800 text-white p-4 space-y-4 transition-all duration-500 transform`}
+        className={`${isMobileMenuOpen ? "block" : "hidden"
+          } lg:hidden bg-gray-800 text-white p-4 space-y-4 transition-all duration-500 transform`}
       >
         <Link
           to="/"

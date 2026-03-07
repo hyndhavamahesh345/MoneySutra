@@ -19,12 +19,13 @@ const PaperTrading = () => {
   // Check if the user is logged in (userId exists in session storage)
   useEffect(() => {
     const storedUserId = sessionStorage.getItem('uid');
-    if (!storedUserId) {
-      navigate('/login');
-    } else {
+    if (storedUserId) {
       setUserId(storedUserId);
+    } else {
+      // demo user for preview
+      setUserId("demo_user");
     }
-  }, [navigate]);
+  }, []);
 
   // Fetch user data (balance, portfolio, transactions) when userId is available
   useEffect(() => {
@@ -34,17 +35,17 @@ const PaperTrading = () => {
           // Fetch balance
           const balanceResponse = await fetch(`/api/funds?uid=${userId}`);
           const balanceData = await balanceResponse.json();
-          setBalance(balanceData.funds);
+          setBalance(balanceData.funds || 0);
 
           // Fetch portfolio (holdings)
           const holdingsResponse = await fetch(`/api/holdings?uid=${userId}`);
           const holdingsData = await holdingsResponse.json();
-          setPortfolio(holdingsData.holdings);
+          setPortfolio(holdingsData.holdings || {});
 
           // Fetch transactions
           const transactionsResponse = await fetch(`/api/transactions?uid=${userId}`);
           const transactionsData = await transactionsResponse.json();
-          setTransactions(transactionsData.transactions);
+          setTransactions(transactionsData.transactions || []);
         } catch (error) {
           console.error('Error fetching user data:', error);
         }
@@ -60,7 +61,7 @@ const PaperTrading = () => {
       try {
         const response = await fetch('/api/stocks');
         const data = await response.json();
-        setStocks(data.tickers);
+        setStocks(data.tickers || []);
       } catch (error) {
         console.error('Error fetching tickers:', error);
       }
@@ -97,7 +98,6 @@ const PaperTrading = () => {
 
   // Handle buying or selling stocks
   const handleTrade = async (symbol, action, quantity, price) => {
-    console.log('Executing trade:', action, symbol, quantity, price);
     try {
       const response = await fetch(`/api/${action}_stock`, {
         method: 'POST',
@@ -116,15 +116,12 @@ const PaperTrading = () => {
 
       if (response.ok) {
         setBalance(result.new_funds);
-
-        const holdingsResponse = await fetch(`/api/holdings?uid=${userId}`);
-        const holdingsData = await holdingsResponse.json();
-        setPortfolio(holdingsData.holdings);
-        console.log(holdingsData.holdings);
-        const transactionsResponse = await fetch(`/api/transactions?uid=${userId}`);
-        const transactionsData = await transactionsResponse.json();
-        setTransactions(transactionsData.transactions);
-        console.log(transactionsData.transactions);
+        const holdingsRes = await fetch(`/api/holdings?uid=${userId}`);
+        const hData = await holdingsRes.json();
+        setPortfolio(hData.holdings || {});
+        const txRes = await fetch(`/api/transactions?uid=${userId}`);
+        const txData = await txRes.json();
+        setTransactions(txData.transactions || []);
       } else {
         alert(result.error || 'Trade failed');
       }
@@ -133,53 +130,60 @@ const PaperTrading = () => {
     }
   };
 
-  // Function to add funds
   const addFunds = async (amount) => {
     try {
       const response = await fetch('/api/add_funds', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          uid: userId,
-          amount: amount,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: userId, amount: amount }),
       });
-
       const result = await response.json();
-
       if (response.ok) {
-        setBalance(result.new_funds); // Update balance in state
+        setBalance(result.new_funds);
         return result;
-      } else {
-        alert(result.error || 'Failed to add funds');
       }
     } catch (error) {
       console.error('Error adding funds:', error);
     }
   };
 
-  // If userId is not available, don't render the component
   if (!userId) {
-    return null; // Or a loading spinner
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <Header balance={balance} onAddFunds={addFunds} />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        <div className="lg:col-span-2">
-          <StockChart stock={selectedStock} historicalData={historicalData} />
-          <TradingInterface
-            stock={selectedStock}
-            onTrade={handleTrade}
-            balance={balance}
-          />
-        </div>
-        <div className="lg:col-span-1">
-          <StockList stocks={stocks} onSelectStock={setSelectedStock} />
-          <Portfolio portfolio={portfolio} transactions={transactions} />
+    <div className="min-h-screen bg-[#050505] text-white pt-24 pb-12 px-4 md:px-8">
+      <div className="max-w-7xl mx-auto">
+        <Header balance={balance} onAddFunds={addFunds} />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-10">
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
+              <StockChart stock={selectedStock} historicalData={historicalData} />
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
+              <TradingInterface
+                stock={selectedStock}
+                onTrade={handleTrade}
+                balance={balance}
+              />
+            </div>
+          </div>
+
+          <div className="lg:col-span-1 space-y-8">
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
+              <StockList stocks={stocks} onSelectStock={setSelectedStock} />
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
+              <Portfolio portfolio={portfolio} transactions={transactions} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

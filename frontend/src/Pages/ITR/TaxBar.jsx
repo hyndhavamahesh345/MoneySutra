@@ -32,39 +32,46 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { ClipboardList, PieChart, ShieldCheck, HelpCircle, FileText, ChevronRight } from "lucide-react";
 
 function TaxBar() {
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Helper function to determine if a route is active
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
+
+  const isActive = (path) => location.pathname === path;
 
   const menuItems = [
-    { path: "/tax/info", label: "What are Taxes?" },
-    { path: "/tax/types", label: "Types of Tax" },
-    { path: "/tax/planning", label: "Tax Planning" },
-    { path: "/tax/savetax", label: "Save Tax" },
-    { path: "/tax/itrfiling", label: "ITR Filing" },
-    { path: "/tax/notice", label: "Income Tax" }
+    { path: "/tax/info", label: "What are Taxes?", icon: <HelpCircle size={18} /> },
+    { path: "/tax/types", label: "Types of Tax", icon: <PieChart size={18} /> },
+    { path: "/tax/planning", label: "Tax Planning", icon: <ClipboardList size={18} /> },
+    { path: "/tax/savetax", label: "Save Tax", icon: <ShieldCheck size={18} /> },
+    { path: "/tax/itrfiling", label: "ITR Filing", icon: <FileText size={18} /> },
+    { path: "/tax/notice", label: "Income Tax", icon: <ChevronRight size={18} /> }
   ];
 
   return (
-    <aside className="fixed left-0 my-3 h-full w-64 bg-gray-100 shadow-md z-40 flex flex-col p-4 space-y-3">
-      <h2 className="text-xl font-bold mb-4 px-2">Tax Navigator</h2>
-      
-      {menuItems.map((item) => (
-        <Button
-          key={item.path}
-          variant={isActive(item.path) ? "default" : "ghost"}
-          className="w-full justify-start"
-          onClick={() => navigate(item.path)}
-        >
-          {item.label}
-        </Button>
-      ))}
+    <aside className="fixed left-0 lg:left-6 top-32 h-[calc(100vh-160px)] w-72 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl z-40 hidden lg:flex flex-col p-6 shadow-2xl">
+      <h2 className="text-2xl font-black mb-8 px-2 tracking-tighter">
+        TAX <span className="text-green-500">NAVIGATOR</span>
+      </h2>
+
+      <div className="space-y-2">
+        {menuItems.map((item) => (
+          <Button
+            key={item.path}
+            variant="ghost"
+            className={`w-full justify-start gap-3 h-12 rounded-xl transition-all duration-300 ${isActive(item.path)
+                ? "bg-green-500 text-black hover:bg-green-400"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+              }`}
+            onClick={() => navigate(item.path)}
+          >
+            {item.icon}
+            <span className="font-semibold">{item.label}</span>
+          </Button>
+        ))}
+      </div>
     </aside>
   );
 }

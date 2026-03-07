@@ -6,12 +6,12 @@ const TradingViewMarketOverview = () => {
     script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js';
     script.async = true;
     script.innerHTML = JSON.stringify({
-      colorTheme: 'light',
+      colorTheme: 'dark',
       dateRange: '12M',
       showChart: true,
       locale: 'en',
       largeChartUrl: '',
-      isTransparent: false,
+      isTransparent: true,
       showSymbolLogo: true,
       showFloatingTooltip: false,
       width: '500',

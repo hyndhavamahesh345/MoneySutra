@@ -27,6 +27,9 @@ import WhatAreTaxes from "./Pages/ITR/WhatAreTaxes/what-are-taxes";
 import TaxBar from "./Pages/ITR/TaxBar";
 import FinancialAdvisorDashboard from "./Pages/Advisor/Dashboard";
 import ConsultAdvisor from "./Pages/Advisor/Consult";
+import SIPSimulator from "./Pages/Tools/SIPSimulator";
+import BeatTheIndex from "./Pages/Tools/BeatTheIndex";
+import PortfolioHealthScore from "./Pages/Tools/PortfolioHealthScore";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -44,8 +47,11 @@ const Layout = ({ children }) => {
     location.pathname === "/tracker" ||
     location.pathname === "/advisor" ||
     location.pathname === "/consult" ||
-    location.pathname === "/report";
-    
+    location.pathname === "/report" ||
+    location.pathname === "/tools/sip-simulator" ||
+    location.pathname === "/tools/beat-the-index" ||
+    location.pathname === "/tools/health-score";
+
   // Show Navbar only on Landing, Login, and Signup pages
   const showNavbar =
     location.pathname === "/" ||
@@ -64,13 +70,13 @@ const Layout = ({ children }) => {
   //   location.pathname === "/tax/notice";
   return (
     <SidebarProvider>
-      <div className="flex w-full h-screen">
+      <div className="flex w-full min-h-screen">
         {showSidebar && <Sidebar className="w-64" />}
-        
+
 
         <div className="flex flex-col flex-grow">
           {showNavbar && <Navbar />}{" "}
-          
+
           {/* Navbar only for landing, login, signup */}
           <div className={showSidebar ? "p-4" : ""}>{children}</div>
         </div>
@@ -91,7 +97,7 @@ function App() {
           <Route path="/game/paper-trading" element={<PaperTrading />} />
           <Route path="/game/investment-quiz" element={<InvestmentQuiz />} />
           <Route path="/game/predict-market" element={<PredictMarket />} />
-          <Route path="/simmulation" element={<SimulationPage />} />
+          <Route path="/simulation" element={<SimulationPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/budget" element={<BudgetPage />} />
           <Route path="/login" element={<Login />} />
@@ -99,13 +105,7 @@ function App() {
           <Route path="/lessons" element={<DriveFilesViewer />} />
 
           <Route path="/report" element={<ReportsPage />} />
-          <Route path="/simulation" element={<SimulationPage />} />
           <Route path="/savings" element={<Savings />} />
-
-          <Route path="/report" element={<ReportsPage />} />
-          <Route path="/simulation" element={<SimulationPage />} />
-          <Route path="/report" element={<ReportsPage />} />
-          <Route path="/simulation" element={<SimulationPage />} />
 
           <Route path="/tax" element={<AboutTaxes />} />
           <Route path="/tax/info" element={<WhatAreTaxes />} />
@@ -117,6 +117,9 @@ function App() {
 
           <Route path="/advisor" element={<FinancialAdvisorDashboard />} />
           <Route path="/consult" element={<ConsultAdvisor />} />
+          <Route path="/tools/sip-simulator" element={<SIPSimulator />} />
+          <Route path="/tools/beat-the-index" element={<BeatTheIndex />} />
+          <Route path="/tools/health-score" element={<PortfolioHealthScore />} />
 
 
         </Routes>

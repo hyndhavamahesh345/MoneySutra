@@ -59,30 +59,64 @@ const TradingInterface = ({ stock, onTrade }) => {
 
   if (!symbol) {
     return (
-      <div className="bg-white p-4 rounded-lg shadow-sm">
-        <p className="text-gray-500">Select a stock to trade</p>
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 border border-white/10">
+          <span className="text-2xl">📈</span>
+        </div>
+        <p className="text-gray-400 font-medium">Select an asset from the list to start trading</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm mt-4">
-      <div className="flex gap-4">
-        <Input
-          type="number"
-          placeholder="Quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-          className="w-24"
-        />
-        <Button onClick={() => handleTrade('buy')}>Buy</Button>
-        <Button onClick={() => handleTrade('sell')}>Sell</Button>
+    <div className="space-y-6">
+      <div className="flex justify-between items-end">
+        <div>
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-1">Market Execution</h3>
+          <p className="text-3xl font-black text-white">{symbol}</p>
+        </div>
+        {stockPrice && (
+          <div className="text-right">
+            <p className="text-sm text-gray-500 uppercase font-bold">Current Value</p>
+            <p className="text-3xl font-black text-green-400">₹ {stockPrice.toLocaleString()}</p>
+          </div>
+        )}
       </div>
-      {stockPrice && (
-        <p className="mt-2 text-sm text-gray-500">
-          Current Price: ${stockPrice.toFixed(2)}
-        </p>
-      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-gray-500 uppercase ml-1">Quantity</label>
+          <Input
+            type="number"
+            placeholder="0"
+            value={quantity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+            className="bg-white/5 border-white/10 h-14 rounded-2xl text-xl font-bold focus:border-green-500/50 transition-all text-white"
+          />
+        </div>
+
+        <div className="flex items-end gap-3 h-14 mt-auto">
+          <Button
+            onClick={() => handleTrade('buy')}
+            className="flex-1 h-full rounded-2xl bg-green-500 hover:bg-green-600 text-black font-black text-lg transition-all"
+          >
+            BUY
+          </Button>
+          <Button
+            onClick={() => handleTrade('sell')}
+            className="flex-1 h-full rounded-2xl bg-white/5 border border-white/10 hover:bg-red-500 hover:text-white font-black text-lg transition-all"
+          >
+            SELL
+          </Button>
+        </div>
+      </div>
+
+      <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">Estimated Total</span>
+          <span className="text-white font-bold">₹ {(quantity * (stockPrice || 0)).toLocaleString()}</span>
+        </div>
+      </div>
     </div>
   );
 };

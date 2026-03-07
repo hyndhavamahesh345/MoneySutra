@@ -19,11 +19,11 @@ const TradingViewWidget = () => {
     script.async = true;
     script.innerHTML = JSON.stringify({
       feedMode: "all_symbols",
-      isTransparent: false,
+      isTransparent: true,
       displayMode: "regular",
       width: "100%",
       height: 550,
-      colorTheme: "light",
+      colorTheme: "dark",
       locale: "en"
     });
 
@@ -47,9 +47,9 @@ const TradingViewWidget = () => {
         setWidgetKey(prev => prev + 1);
       }, 300); // 300ms debounce
     };
-    
+
     window.addEventListener("resize", handleResize);
-    
+
     return () => {
       window.removeEventListener("resize", handleResize);
       clearTimeout(resizeTimer);
@@ -64,7 +64,7 @@ const TradingViewWidget = () => {
   return (
     <div className="w-full h-full">
       <div key={widgetKey} className="tradingview-widget-container w-full">
-        <div 
+        <div
           className="tradingview-widget-container__widget w-full"
           ref={containerRef}
         ></div>

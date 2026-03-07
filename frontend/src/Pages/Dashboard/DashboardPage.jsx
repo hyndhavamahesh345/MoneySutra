@@ -34,10 +34,10 @@ const DashboardPage = () => {
     const userId = sessionStorage.getItem("uid");
     console.log("User ID from sessionStorage:", userId); // Debugging
     if (!userId) {
-      setWalletBalance("User not found");
-      setPortfolioValue("User not found");
-      // setTotalInvestments("User not found");
-      setFunds("User not found");
+      // Demo Data for Guest State
+      setWalletBalance("₹ 0.00");
+      setPortfolioValue("0");
+      setFunds("₹ 0.00");
       return;
     }
 
@@ -116,7 +116,7 @@ const DashboardPage = () => {
   }, []); // Empty dependency array ensures this runs only once on mount
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto py-8 min-h-screen">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
@@ -157,9 +157,9 @@ const DashboardPage = () => {
             },
             {
               title: "Monthly Returns",
-              value: "$845.32",
+              value: "₹ 8,452.32",
               change: "↑ 3.2%",
-              icon: <ArrowUpRight className="h-4 w-4 text-muted-foreground" />,
+              icon: <ArrowUpRight className="h-4 w-4 text-emerald-500" />,
               description: "this month",
               color: "text-emerald-500",
             },

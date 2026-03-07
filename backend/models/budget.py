@@ -1,5 +1,5 @@
 
-from datetime import datetime
+import datetime
 
 class BudgetModel:
     def __init__(self, data):
@@ -16,8 +16,8 @@ class BudgetModel:
         self.savings = data.get('savings', 0)
         
         # Add timestamp and month_year
-        self.timestamp = data.get('timestamp', datetime.utcnow().isoformat())
-        self.month_year = data.get('month_year', datetime.utcnow().strftime("%Y-%m"))
+        self.timestamp = data.get('timestamp', datetime.datetime.utcnow().isoformat())
+        self.month_year = data.get('month_year', datetime.datetime.utcnow().strftime("%Y-%m"))
 
     def to_dict(self):
         return {

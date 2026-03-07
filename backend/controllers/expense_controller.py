@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from config.firebase import db
 from models.Expense import ExpenseModel
-from datetime import datetime
+import datetime
 
 class ExpenseController:
     def add_expense(self, user_id):
@@ -12,7 +12,7 @@ class ExpenseController:
             expense_data['userId'] = user_id
             
             # Add timestamp to the expense data
-            expense_data['timestamp'] = datetime.utcnow().isoformat()
+            expense_data['timestamp'] = datetime.datetime.utcnow().isoformat()
             
             expense_model = ExpenseModel(expense_data)
             expense_dict = expense_model.to_dict()

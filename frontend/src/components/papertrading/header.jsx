@@ -15,25 +15,30 @@ const Header = ({ balance, onAddFunds }) => {
   };
 
   return (
-    <header className="bg-white shadow-sm p-4 rounded-lg">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Paper Trading Demo</h1>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5 text-gray-600" />
-            <span className="text-lg font-medium text-gray-900">${balance.toLocaleString()}</span>
+    <header className="bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-xl mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div>
+          <h1 className="text-3xl font-black italic tracking-tighter text-white">Paper Trading</h1>
+          <p className="text-gray-400 font-light">Practice with virtual capital in real markets.</p>
+        </div>
+
+        <div className="flex items-center gap-8">
+          <div className="text-right">
+            <p className="text-sm text-gray-500 uppercase tracking-widest font-bold">Virtual Balance</p>
+            <p className="text-3xl font-black text-green-400">₹ {balance.toLocaleString()}</p>
           </div>
-          <form onSubmit={handleAddFunds} className="flex items-center gap-2">
+
+          <form onSubmit={handleAddFunds} className="flex items-center gap-3 bg-white/5 p-2 rounded-2xl border border-white/10">
             <input
               type="number"
               placeholder="Amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="p-2 border rounded-lg"
+              className="bg-transparent border-none focus:ring-0 text-white w-24 px-2"
             />
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+              className="bg-green-500 hover:bg-green-600 text-black font-bold px-4 py-2 rounded-xl transition-all"
             >
               Add Funds
             </button>

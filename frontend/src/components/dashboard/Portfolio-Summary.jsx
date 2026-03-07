@@ -167,7 +167,7 @@
 // export default PortfolioSummary;
 
 import React, { useState, useEffect } from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import axios from "axios";
 
 const PortfolioSummary = () => {
@@ -196,7 +196,7 @@ const PortfolioSummary = () => {
       try {
         const user_id = sessionStorage.getItem("uid");
         if (!user_id) {
-          console.error("No user_id found in sessionStorage");
+          setExpenseCategories([]);
           setLoading(false);
           return;
         }
@@ -260,62 +260,71 @@ const PortfolioSummary = () => {
     );
   }
 
+  // Placeholder data if no entries found
+  const displayData = expenseCategories.length > 0 ? expenseCategories : [
+    { name: "Stocks", value: 45, color: "#0ea5e9" },
+    { name: "Bonds", value: 20, color: "#8b5cf6" },
+    { name: "Mutual Funds", value: 15, color: "#f43f5e" },
+    { name: "Real Estate", value: 10, color: "#10b981" },
+    { name: "Gold", value: 10, color: "#facc15" },
+  ];
+
   return (
-    <div className="w-full flex flex-col md:flex-row items-center justify-between p-6 bg-white rounded-lg shadow-md">
+    <div className="w-full flex flex-col md:flex-row items-center justify-between">
       {/* Pie Chart */}
       <div className="w-full md:w-1/2 flex justify-center mb-6 md:mb-0">
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
-              data={expenseCategories}
+              data={displayData}
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={80}
-              paddingAngle={2}
+              innerRadius={70}
+              outerRadius={90}
+              paddingAngle={5}
               dataKey="value"
-              label={false}
+              stroke="none"
             >
-              {expenseCategories.map((entry, index) => (
+              {displayData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
+            <Tooltip
+              contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '8px' }}
+              itemStyle={{ color: '#fff' }}
+            />
           </PieChart>
         </ResponsiveContainer>
       </div>
 
       {/* Asset Allocation Details */}
-      <div className="w-full md:w-1/2 pl-6">
-        <h3 className="text-lg font-medium mb-4">Asset Allocation</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {expenseCategories.map((item) => (
-            <div key={item.name} className="flex items-center gap-2">
+      <div className="w-full md:w-1/2 pl-0 md:pl-10">
+        <h3 className="text-sm font-medium text-muted-foreground mb-6 uppercase tracking-wider">Asset Allocation</h3>
+        <div className="grid grid-cols-2 gap-y-4 gap-x-6">
+          {displayData.map((item) => (
+            <div key={item.name} className="flex items-center gap-3">
               <div
-                style={{
-                  backgroundColor: item.color,
-                  width: "10px",
-                  height: "10px",
-                  borderRadius: "50%",
-                }}
+                className="w-2.5 h-2.5 rounded-full"
+                style={{ backgroundColor: item.color }}
               ></div>
-              <div className="flex justify-between w-full">
-                <span className="text-sm">{item.name}</span>
-                <span className="text-sm font-medium">{item.value}%</span>
+              <div className="flex flex-col">
+                <span className="text-xs text-muted-foreground">{item.name}</span>
+                <span className="text-sm font-bold">{item.value}%</span>
               </div>
             </div>
           ))}
         </div>
 
         {/* Diversification Score */}
-        <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+        <div className="mt-10 p-5 bg-white/5 border border-white/10 rounded-2xl">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm font-medium">Diversification Score</p>
-              <p className="text-xs text-gray-500">
-                Your portfolio is well balanced
+              <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-1">Diversification</p>
+              <p className="text-sm text-muted-foreground">
+                Optimal market spread
               </p>
             </div>
-            <div className="text-2xl font-bold">8.5/10</div>
+            <div className="text-3xl font-black italic">8.5</div>
           </div>
         </div>
       </div>

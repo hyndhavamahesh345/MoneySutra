@@ -45,7 +45,7 @@ const Portfolio = ({ portfolio, transactions }) => {
   // Calculate the total value of the portfolio
   const totalPortfolioValue = Object.keys(portfolio).reduce((total, symbol) => {
     try {
-      const price = stockPrices[symbol+".NS"];
+      const price = stockPrices[symbol + ".NS"];
       const quantity = portfolio[symbol];
       if (typeof price === 'number' && typeof quantity === 'number') {
         return total + price * quantity;
@@ -57,91 +57,90 @@ const Portfolio = ({ portfolio, transactions }) => {
   }, 0);
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm mt-4">
-      <h2 className="text-xl font-bold mb-4">Portfolio</h2>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-xl font-bold mb-6 text-white border-b border-white/10 pb-2">Active Positions</h2>
 
-      {/* Display portfolio holdings */}
-      {Object.keys(portfolio).length === 0 ? (
-        <p className="text-gray-500">Your portfolio is empty.</p>
-      ) : (
-        <div>
-          {Object.keys(portfolio).map((symbol) => {
-            try {
-              const price = stockPrices[symbol+".NS"];
-              const quantity = portfolio[symbol];
-              const value =
-                typeof price === 'number' && typeof quantity === 'number'
-                  ? (price * quantity).toFixed(2)
-                  : 'N/A';
+        {Object.keys(portfolio).length === 0 ? (
+          <div className="py-12 text-center bg-white/5 rounded-2xl border border-dashed border-white/20 text-gray-500">
+            <p className="text-sm">No active positions in your portfolio.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {Object.keys(portfolio).map((symbol) => {
+              try {
+                const price = stockPrices[symbol + ".NS"] || stockPrices[symbol];
+                const quantity = portfolio[symbol];
+                const value =
+                  typeof price === 'number' && typeof quantity === 'number'
+                    ? (price * quantity).toLocaleString()
+                    : '---';
 
-              return (
-                <div key={symbol} className="flex justify-between items-center mb-2">
-                  <div>
-                    <p className="font-medium">{symbol}</p>
-                    <p className="text-sm text-gray-500">{quantity} shares</p>
+                return (
+                  <div key={symbol} className="flex justify-between items-center p-3 hover:bg-white/5 rounded-xl transition-all border border-transparent hover:border-white/10">
+                    <div>
+                      <p className="font-bold text-white uppercase">{symbol}</p>
+                      <p className="text-xs text-gray-500 font-medium">{quantity} Units</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-green-400">₹ {value}</p>
+                      {price && <p className="text-[10px] text-gray-500">@ ₹ {price.toLocaleString()}</p>}
+                    </div>
                   </div>
-                  <p className="font-medium">${value}</p>
-                </div>
-              );
-            } catch (error) {
-              console.error(`Error rendering holdings for ${symbol}:`, error);
-              return null; // Skip rendering this holding if an error occurs
-            }
-          })}
+                );
+              } catch (error) {
+                console.error(`Error rendering holdings for ${symbol}:`, error);
+                return null;
+              }
+            })}
 
-          {/* Display total portfolio value */}
-          <div className="border-t pt-3 mt-3">
-            <div className="flex justify-between items-center">
-              <p className="font-medium">Total Value</p>
-              <p className="font-medium">${totalPortfolioValue.toFixed(2)}</p>
+            <div className="bg-green-500/10 p-4 rounded-2xl border border-green-500/20 mt-6">
+              <div className="flex justify-between items-center">
+                <p className="text-sm font-bold text-green-400 uppercase">Portfolio Value</p>
+                <p className="text-2xl font-black text-white">₹ {totalPortfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Display recent transactions */}
-      <h2 className="text-xl font-bold mt-6 mb-4">Recent Transactions</h2>
-      {transactions.length === 0 ? (
-        <p className="text-gray-500">No transactions yet.</p>
-      ) : (
-        <div>
-          {transactions.slice(0, 5).map((transaction, index) => {
-            try {
-              if (
-                !transaction ||
-                typeof transaction !== 'object' ||
-                !transaction.stock_symbol ||
-                !transaction.quantity ||
-                !transaction.price_per_share
-              ) {
-                return null; // Skip invalid transactions
-              }
+      <div>
+        <h2 className="text-xl font-bold mb-6 text-white border-b border-white/10 pb-2">History</h2>
+        {transactions.length === 0 ? (
+          <p className="text-center py-8 text-gray-600 italic text-sm">No transaction history found.</p>
+        ) : (
+          <div className="space-y-3">
+            {transactions.slice(0, 8).map((transaction, index) => {
+              try {
+                if (!transaction || typeof transaction !== 'object' || !transaction.stock_symbol) return null;
 
-              return (
-                <div key={index} className="flex justify-between items-center mb-2">
-                  <div>
-                    <p className="font-medium">
-                      {transaction.type === 'buy' ? 'Bought' : 'Sold'} {transaction.stock_symbol}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {transaction.quantity} shares at ${transaction.price_per_share.toFixed(2)}
-                    </p>
+                const isBuy = transaction.type === 'buy';
+                return (
+                  <div key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5 group hover:border-white/20 transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${isBuy ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                        {isBuy ? 'B' : 'S'}
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm text-white uppercase">{transaction.stock_symbol}</p>
+                        <p className="text-[10px] text-gray-500 uppercase font-black">{transaction.quantity} @ ₹ {transaction.price_per_share?.toLocaleString()}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`font-bold text-sm ${isBuy ? 'text-red-400' : 'text-green-400'}`}>
+                        {isBuy ? '-' : '+'}₹ {(transaction.total_cost || transaction.total_earnings || 0).toLocaleString()}
+                      </p>
+                      <p className="text-[10px] text-gray-600">{transaction.timestamp ? new Date(transaction.timestamp).toLocaleDateString() : 'Recent'}</p>
+                    </div>
                   </div>
-                  <p className="font-medium">
-                    {transaction.type === 'buy' ? '-' : '+'}$
-                    {transaction.type === 'buy'
-                      ? (transaction.total_cost || 0).toFixed(2)
-                      : (transaction.total_earnings || 0).toFixed(2)}
-                  </p>
-                </div>
-              );
-            } catch (error) {
-              console.error(`Error rendering transaction ${index}:`, error);
-              return null; // Skip rendering this transaction if an error occurs
-            }
-          })}
-        </div>
-      )}
+                );
+              } catch (error) {
+                return null;
+              }
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
